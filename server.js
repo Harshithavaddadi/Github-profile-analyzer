@@ -1,22 +1,20 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
 const app = express();
 
-// ✅ FIX CORS (ALLOW FRONTEND)
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 
-// routes
+app.get("/", (req, res) => {
+  res.send("🚀 GitHub Profile Analyzer API is Running");
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "OK" });
+});
+
 app.use("/api", require("./routes/githubRoutes"));
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
