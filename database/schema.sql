@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS github_analyzer;
+
+USE github_analyzer;
+
+CREATE TABLE IF NOT EXISTS profiles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  name VARCHAR(255),
+  bio TEXT,
+  public_repos INT NOT NULL DEFAULT 0,
+  followers INT NOT NULL DEFAULT 0,
+  following INT NOT NULL DEFAULT 0,
+  company VARCHAR(255),
+  location VARCHAR(255),
+  github_url VARCHAR(255) NOT NULL,
+  account_age_years INT NOT NULL DEFAULT 0,
+  popularity_score INT NOT NULL DEFAULT 0,
+  analyzed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

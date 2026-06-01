@@ -1,73 +1,117 @@
-# Getting Started with Create React App
+# GitHub Profile Analyzer API
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Backend service built with Node.js, Express.js, MySQL, and the GitHub public API. It analyzes a GitHub user's public profile, stores useful insights in MySQL, and exposes APIs to read stored profile analysis results.
 
-## Available Scripts
+## Live URLs
 
-In the project directory, you can run:
+Frontend:
 
-### `npm start`
+https://github-profile-analyzer-kappa.vercel.app
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+API base URL:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+https://github-profile-analyzer-kappa.vercel.app/api
 
-### `npm test`
+## Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js
+- Express.js
+- MySQL
+- GitHub Public API
+- React frontend
 
-### `npm run build`
+## Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Fetch GitHub public profile details by username
+- Store analysis results in MySQL
+- Update an existing analyzed profile when the same username is analyzed again
+- Fetch all stored profiles
+- Fetch one stored profile by username
+- Simple popularity score based on followers and public repositories
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## API Endpoints
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Analyze and store a GitHub profile:
 
-### `npm run eject`
+```http
+GET /api/analyze/:username
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Example:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```http
+GET /api/analyze/octocat
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Fetch all stored profiles:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```http
+GET /api/profiles
+```
 
-## Learn More
+Fetch one stored profile:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```http
+GET /api/profile/:username
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Example:
 
-### Code Splitting
+```http
+GET /api/profile/octocat
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Health check:
 
-### Analyzing the Bundle Size
+```http
+GET /health
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Database Setup
 
-### Making a Progressive Web App
+Import the schema:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+mysql -u root -p < database/schema.sql
+```
 
-### Advanced Configuration
+Create a `.env` file in the project root:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=github_analyzer
+DB_PORT=3306
+```
 
-### Deployment
+For Vercel or any deployed server, these same variables must be added as production environment variables. The live API can store data only if the MySQL database is hosted online and reachable from Vercel.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Local Setup
 
-### `npm run build` fails to minify
+Install dependencies:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+npm install
+```
 
+Start the backend:
 
-### made my Harshitha Vaddadi.
+```bash
+npm start
+```
+
+Run the React app locally:
+
+```bash
+npm run build
+```
+
+## Submission Notes
+
+- Database schema/export is available at `database/schema.sql`.
+- The API uses MySQL for persistent storage.
+- A local MySQL database works for local testing.
+- A hosted MySQL database is required for production deployment on Vercel.
+
+Made by Harshitha Vaddadi.

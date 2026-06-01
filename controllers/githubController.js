@@ -1,7 +1,6 @@
 const axios = require("axios");
 const db = require("../config/db");
 
-// 🔥 ANALYZE GITHUB PROFILE
 const analyzeProfile = async (req, res) => {
   try {
     const { username } = req.params;
@@ -21,8 +20,6 @@ const analyzeProfile = async (req, res) => {
     );
 
     const user = response.data;
-
-    // Age calculation
     const createdDate = new Date(user.created_at);
     const today = new Date();
     const accountAge =
@@ -32,9 +29,23 @@ const analyzeProfile = async (req, res) => {
         ? 1
         : 0);
 
-    // Score
     const popularityScore =
       (user.followers || 0) + (user.public_repos || 0) * 2;
+
+    const profileData = {
+      username: user.login,
+      name: user.name,
+      bio: user.bio,
+      publicRepos: user.public_repos,
+      repos: user.public_repos,
+      followers: user.followers,
+      following: user.following,
+      company: user.company,
+      location: user.location,
+      githubUrl: user.html_url,
+      accountAge,
+      popularityScore,
+    };
 
     const sql = `
       INSERT INTO profiles (
@@ -64,41 +75,25 @@ const analyzeProfile = async (req, res) => {
         popularity_score = VALUES(popularity_score)
     `;
 
-    db.query(
-      sql,
-      [
-        user.login,
-        user.name,
-        user.bio,
-        user.public_repos,
-        user.followers,
-        user.following,
-        user.company,
-        user.location,
-        user.html_url,
-        accountAge,
-        popularityScore,
-      ],
-      (err) => {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
+    await db.execute(sql, [
+      user.login,
+      user.name,
+      user.bio,
+      user.public_repos,
+      user.followers,
+      user.following,
+      user.company,
+      user.location,
+      user.html_url,
+      accountAge,
+      popularityScore,
+    ]);
 
-        res.json({
-          success: true,
-          message: "Profile analyzed successfully",
-          data: {
-            username: user.login,
-            name: user.name,
-            followers: user.followers,
-            repos: user.public_repos,
-            following: user.following,
-            popularityScore,
-            accountAge,
-          },
-        });
-      }
-    );
+    res.json({
+      success: true,
+      message: "Profile analyzed and stored successfully",
+      data: profileData,
+    });
   } catch (error) {
     if (error.response) {
       return res.status(error.response.status).json({
@@ -110,27 +105,34 @@ const analyzeProfile = async (req, res) => {
   }
 };
 
-// 🔥 GET ALL PROFILES
-const getProfiles = (req, res) => {
-  db.query("SELECT * FROM profiles", (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(result);
-  });
+const getProfiles = async (req, res) => {
+  try {
+    const [profiles] = await db.execute(
+      "SELECT * FROM profiles ORDER BY analyzed_at DESC"
+    );
+    res.json(profiles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-// 🔥 GET SINGLE PROFILE
-const getProfile = (req, res) => {
-  db.query(
-    "SELECT * FROM profiles WHERE username = ?",
-    [req.params.username],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(result[0]);
+const getProfile = async (req, res) => {
+  try {
+    const [profiles] = await db.execute(
+      "SELECT * FROM profiles WHERE username = ?",
+      [req.params.username]
+    );
+
+    if (!profiles.length) {
+      return res.status(404).json({ error: "Profile not found" });
     }
-  );
+
+    res.json(profiles[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-// ✅ IMPORTANT EXPORT (THIS FIXES YOUR ERROR)
 module.exports = {
   analyzeProfile,
   getProfiles,
