@@ -5,3 +5,6 @@ build
 .vercel
 .env*
 !.env.example
+database/localdb.json
+localtunnel-error.log
+localtunnel-output.log
